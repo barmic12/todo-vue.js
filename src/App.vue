@@ -1,0 +1,37 @@
+<template>
+  <div id="app">
+    <img src="./assets/logo.png" class="logo">
+    <todo-list></todo-list>
+  </div>
+</template>
+
+<script>
+  import Task from './components/Task'
+  import TodoList from './components/TodoList'
+export default {
+  name: 'App',
+  components: {
+    Task,
+    TodoList,
+  }
+}
+</script>
+
+<style>
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  margin-top: 60px;
+  width:500px;
+  margin: 0 auto;
+}
+
+#app .logo {
+  text-align: center;
+  display: block;
+  width:100px;
+  margin: 0 auto;
+}
+</style>
