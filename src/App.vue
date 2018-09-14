@@ -6,12 +6,12 @@
 </template>
 
 <script>
-  import Task from './components/Task'
+  import TodoItem from './components/TodoItem'
   import TodoList from './components/TodoList'
 export default {
   name: 'App',
   components: {
-    Task,
+    TodoItem,
     TodoList,
   }
 }
