@@ -1,3 +1,4 @@
+<script src="http://192.168.56.1:8098"></script>
 <template>
   <div id="app">
     <img src="./assets/logo.png" class="logo">
@@ -35,3 +36,4 @@ export default {
   margin: 0 auto;
 }
 </style>
+

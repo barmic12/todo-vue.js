@@ -1,32 +1,88 @@
 <template>
-	<div>One todo-item</div>
+	<div class="todo" >
+		<div class="left-side">
+			<input type="checkbox" v-model="completed" @change="doneEdit" />
+		</div>
+		<div class="right-side">
+		<div v-if="!editing" :class="{ completed: completed }">
+
+			<span @dblclick="editItem">
+				{{ title }}
+			</span>
+			<div class="destroy" @click="removeItem(this)">&times</div>
+		</div>
+		<div v-if="editing">
+			<input type="text" v-model="title" @blur="doneEdit" @keyup.enter="doneEdit" @keyup.esc="cancelEdit" v-focus class="input-edit" />
+		</div>
+		</div>
+		<div style="clear: both"></div>
+	</div>
 </template>
 
 <script>
 export default {
   name: 'todo-item',
+  props: {
+  	item: {
+  		type: Object,
+  		required: true,
+  	},
+  	index: {
+  		type: Number,
+  		required: true,
+  	},
+  	checkAll: {
+  		type: Boolean,
+  		required: true,
+  	}
+  },
   data() {
   	return {
-  		title: '',
-  		beforeEditCache: '',
-  		filter: 'all',
-  		items: [
-  		{
-  			title: 'Create Todo',
-  			completed: false,
-  			editing: false
-  		},
-  		{
-  			title: 'Create Rails Server',
-  			completed: false,
-  			editing: false
-  		},
-  		],
-		visibility: 'all',
-		errors: []
+  		'id': this.item.id,
+  		'title': this.item.title,
+  		'completed': this.item.completed,
+  		'editing': this.item.editing,
+  		'beforeEditCache': ''
   	}
+  },
+  watch: {
+  	checkAll() {
+  		if(this.checkAll) {
+  			this.completed = true
+  		} else {
+  			this.completed = false
+  		}
+  	}
+  },
+  methods: {
+  	removeItem(item) {
+  		this.$emit('removedItem', item)
+  	},
+  	editItem() {
+  		this.beforeEditCache = this.title
+  		this.editing = true;
+  	},
+  	doneEdit() {
+  		if (this.title.trim().length == 0) {
+  			return;
+  		}
+  		this.editing = false;
+  		this.$emit('finishedEdit', {
+  			'index': this.index,
+  			'item': {
+  				'id': this.id,
+  				'title': this.title,
+  				'completed': this.completed,
+  				'editing:': this.editing,
+  			}
+  		})
+  	},
+  	cancelEdit() {
+  		this.title = this.beforeEditCache;
+  		this.editing = false;
+  	},
   }
-}
+	}
 </script>
 
 
@@ -48,7 +104,7 @@ export default {
 		margin: 0px;
 	}
 
-	.todo-list li {
+	.todo-list .todo-item {
 		padding: 10px;
 		background-color: white;
 		border-bottom: 1px solid #ededed;
@@ -69,7 +125,7 @@ export default {
 		color: red;
 	}
 
-	.todo-list li:hover .destroy {
+	.todo-list .todo-item:hover .destroy {
 		display: inline-block;
 		float: right;
 	}
@@ -93,5 +149,13 @@ export default {
 		background-color: green;
 		color: white;
 		border: 0px;
+	}
+
+	.left-side {
+		float: left;
+	}
+
+	.right-side {
+		float: left;
 	}
 </style>

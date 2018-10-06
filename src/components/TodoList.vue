@@ -1,27 +1,18 @@
 <template>
 	<section>
-		<form 
+		<form
 			id="form-app"
 			@submit.prevent="addItem"
 			>
-			<input type="text" placeholder="Write todo..." v-model="title" />	
+			<input type="text" placeholder="Write todo..." v-model="title" />
 		</form>
+		<div class="todo-list">
+			<todo-item v-for="(item, index) in itemsFiltered" :key="item.id" :item="item" :index="index" class="todo-item"
+			:checkAll="!anyRemaining"
+			@removedItem="removeItem" @finishedEdit="finishedEdit"></todo-item>
+		</div>
 
-		<ul class="todo-list">	
-				<li class="todo" v-for="item in itemsFiltered"
-					:class="{ completed: item.completed }">
-					<div v-if="!item.editing">
-					<input type="checkbox" v-model="item.completed" />
-					<span @dblclick="editItem(item)">
-						{{ item.title }}
-					</span> 
-					<div class="destroy" @click="removeItem(item)">&times</div>
-					</div>
-					<div v-if="item.editing">
-						<input type="text" v-model="item.title" @blur="doneEdit(item)" @keyup.enter="doneEdit(item)" @keyup.esc="cancelEdit(item)" v-focus class="input-edit" />
-					</div>
-				</li>
-		</ul>
+
 		<div class="block-info">
 			<div> <label><input type="checkbox" :checked="!anyRemaining" @change="checkAllItems"> Check All </label> </div>
 			<div>{{ remaining }} items remains</div>
@@ -50,15 +41,18 @@ export default {
   data() {
   	return {
   		title: '',
+			idForItem: 3,
   		beforeEditCache: '',
   		filter: 'all',
   		items: [
   		{
+  			id: 1,
   			title: 'Create Todo',
   			completed: false,
   			editing: false
   		},
   		{
+  			id: 2,
   			title: 'Create Rails Server',
   			completed: false,
   			editing: false
@@ -73,9 +67,11 @@ export default {
   		this.items.push({
   			title: this.title,
   			completed: false,
-  			editing: false
+  			editing: false,
+				id: this.idForItem
   		})
   		this.title = null;
+			this.idForItem++;
   	},
   	removeItem(item) {
   		this.items.splice(this.items.indexOf(item), 1);
@@ -99,6 +95,10 @@ export default {
   	},
   	removeCompleted() {
   		this.items = this.items.filter(todo => !todo.completed)
+  	},
+  	finishedEdit(data) {
+			const index = this.items.findIndex((item) => item.id == data.item.id)
+  		this.items.splice(index, 1, data.item)
   	}
   },
   computed: {
@@ -111,7 +111,7 @@ export default {
   	itemsFiltered() {
   		if(this.filter == 'all') {
   			return this.items
-  		} 
+  		}
   		else if (this.filter == 'active') {
   			return this.items.filter(todo => !todo.completed)
   		}
@@ -152,7 +152,7 @@ export default {
 		margin: 0px;
 	}
 
-	.todo-list li {
+	.todo-list .todo-item {
 		padding: 10px;
 		background-color: white;
 		border-bottom: 1px solid #ededed;
