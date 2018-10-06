@@ -8,8 +8,7 @@
 		</form>
 		<div class="todo-list">
 			<todo-item v-for="(item, index) in itemsFiltered" :key="item.id" :item="item" :index="index" class="todo-item"
-			:checkAll="!anyRemaining"
-			@removedItem="removeItem" @finishedEdit="finishedEdit"></todo-item>
+			:checkAll="!anyRemaining"></todo-item>
 		</div>
 
 
@@ -96,11 +95,15 @@ export default {
   	removeCompleted() {
   		this.items = this.items.filter(todo => !todo.completed)
   	},
-  	finishedEdit(data) {
+  	finishEdit(data) {
 			const index = this.items.findIndex((item) => item.id == data.item.id)
   		this.items.splice(index, 1, data.item)
   	}
   },
+	created() {
+		eventBus.$on('removedItem', (item) => this.removeItem(item))
+		eventBus.$on('finishedEdit', (index) => this.finishEdit(index))
+	},
   computed: {
   	remaining() {
   		return this.items.filter(todo => !todo.completed).length
@@ -121,13 +124,6 @@ export default {
   	},
   	anyActive() {
   		return this.items.filter(todo => todo.completed).length
-  	}
-  },
-  directives: {
-  	focus: {
-  		inserted: function(el) {
-  			el.focus()
-  		}
   	}
   }
 }

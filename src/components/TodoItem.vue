@@ -2,20 +2,20 @@
 	<div class="todo" >
 		<div class="left-side">
 			<input type="checkbox" v-model="completed" @change="doneEdit" />
-		</div>
-		<div class="right-side">
-		<div v-if="!editing" :class="{ completed: completed }">
+			<div v-if="!editing" :class="{ completed: completed }">
 
-			<span @dblclick="editItem">
-				{{ title }}
-			</span>
+				<span @dblclick="editItem">
+					{{ title }}
+				</span>
+			</div>
+			<div v-if="editing">
+				<input type="text" v-model="title" @blur="doneEdit" @keyup.enter="doneEdit" @keyup.esc="cancelEdit" v-focus class="input-edit" />
+			</div>
+		</div>
+		<div>
+			<span>Plural</span>
 			<div class="destroy" @click="removeItem(this)">&times</div>
 		</div>
-		<div v-if="editing">
-			<input type="text" v-model="title" @blur="doneEdit" @keyup.enter="doneEdit" @keyup.esc="cancelEdit" v-focus class="input-edit" />
-		</div>
-		</div>
-		<div style="clear: both"></div>
 	</div>
 </template>
 
@@ -56,7 +56,8 @@ export default {
   },
   methods: {
   	removeItem(item) {
-  		this.$emit('removedItem', item)
+  		//this.$emit('removedItem', item)
+			eventBus.$emit('removedItem', item)
   	},
   	editItem() {
   		this.beforeEditCache = this.title
@@ -67,7 +68,8 @@ export default {
   			return;
   		}
   		this.editing = false;
-  		this.$emit('finishedEdit', {
+  		//this.$emit('finishedEdit', {
+			eventBus.$emit('finishedEdit', {
   			'index': this.index,
   			'item': {
   				'id': this.id,
@@ -81,6 +83,13 @@ export default {
   		this.title = this.beforeEditCache;
   		this.editing = false;
   	},
+  },
+  directives: {
+  	focus: {
+  		inserted: function(el) {
+  			el.focus()
+  		}
+  	}
   }
 	}
 </script>
@@ -109,6 +118,13 @@ export default {
 		background-color: white;
 		border-bottom: 1px solid #ededed;
 		font-size: 18px;
+	}
+
+	.todo {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		animation-duration: 0.3s;
 	}
 
 	.completed {
@@ -152,7 +168,11 @@ export default {
 	}
 
 	.left-side {
-		float: left;
+		display: flex;
+	}
+
+	.left-side input {
+		margin-right: 10px;
 	}
 
 	.right-side {
