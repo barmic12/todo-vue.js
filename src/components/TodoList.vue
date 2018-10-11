@@ -13,29 +13,31 @@
 
 
 		<div class="block-info">
-			<div> <label><input type="checkbox" :checked="!anyRemaining" @change="checkAllItems"> Check All </label> </div>
-			<div>{{ remaining }} items remains</div>
+			<todo-check-all :anyRemaining="anyRemaining"></todo-check-all>
+			<todos-counter :remaining="remaining"></todos-counter>
 		</div>
 
 		<div class="block-info">
-			<div>
-				<button :class="{ active: filter == 'all' }" @click="filter = 'all'">All</button>
-				<button :class="{ active: filter == 'active' }" @click="filter = 'active'">Active</button>
-				<button :class="{ active: filter == 'completed' }" @click="filter = 'completed'">Completed</button>
-			</div>
-			<div>
-				<button v-if="anyActive" @click="removeCompleted">Clear completed</button>
-			</div>
+			<todo-filtered></todo-filtered>
+			<todo-clear-completed :showClearCompletedButton="showClearCompletedButton"></todo-clear-completed>
 		</div>
 	</section>
 </template>
 
 <script>
 	import TodoItem from './TodoItem'
+	import TodosCounter from './TodosCounter'
+	import TodoCheckAll from './TodoCheckAll'
+	import TodoFiltered from './TodoFiltered'
+	import TodoClearCompleted from './TodoClearCompleted'
 export default {
   name: 'todo-list',
   components: {
   	TodoItem,
+		TodosCounter,
+		TodoCheckAll,
+		TodoFiltered,
+		TodoClearCompleted,
   },
   data() {
   	return {
@@ -103,6 +105,16 @@ export default {
 	created() {
 		eventBus.$on('removedItem', (item) => this.removeItem(item))
 		eventBus.$on('finishedEdit', (index) => this.finishEdit(index))
+		eventBus.$on('checkAllChanged', (checked) => this.checkAllItems(checked))
+		eventBus.$on('filterChanged', (filter) => this.filter = filter)
+		eventBus.$on('clearCompletedItems',() => this.removeCompleted())
+	},
+	beforeDestroy() {
+		eventBus.$off('removedItem', (item) => this.removeItem(item))
+		eventBus.$off('finishedEdit', (index) => this.finishEdit(index))
+		eventBus.$off('checkAllChanged', (checked) => this.checkAllItems(checked))
+		eventBus.$off('filterChanged', (filter) => this.filter = filter)
+		eventBus.$off('clearCompletedItems',() => this.removeCompleted())
 	},
   computed: {
   	remaining() {
@@ -122,8 +134,8 @@ export default {
   			return this.items.filter(todo => todo.completed)
   		}
   	},
-  	anyActive() {
-  		return this.items.filter(todo => todo.completed).length
+  	showClearCompletedButton() {
+  		return this.items.filter(todo => todo.completed).length > 0
   	}
   }
 }
