@@ -14,7 +14,7 @@
 		</div>
 		<div>
 			<span>Plural</span>
-			<div class="destroy" @click="removeItem(this)">&times</div>
+			<div class="destroy" @click="removeItem(item.id)">&times</div>
 		</div>
 	</div>
 </template>
@@ -47,17 +47,14 @@ export default {
   },
   watch: {
   	checkAll() {
-  		if(this.checkAll) {
-  			this.completed = true
-  		} else {
-  			this.completed = false
-  		}
+  		this.completed = this.checkAll ? true : this.item.completed
   	}
   },
   methods: {
-  	removeItem(item) {
+  	removeItem(id) {
   		//this.$emit('removedItem', item)
-			eventBus.$emit('removedItem', item)
+			//eventBus.$emit('removedItem', item)
+			this.$store.dispatch('deleteTodo', id)
   	},
   	editItem() {
   		this.beforeEditCache = this.title
@@ -69,15 +66,12 @@ export default {
   		}
   		this.editing = false;
   		//this.$emit('finishedEdit', {
-			eventBus.$emit('finishedEdit', {
-  			'index': this.index,
-  			'item': {
-  				'id': this.id,
-  				'title': this.title,
-  				'completed': this.completed,
-  				'editing:': this.editing,
-  			}
-  		})
+			this.$store.dispatch('updateItem', {
+				'id': this.id,
+				'title': this.title,
+				'completed': this.completed,
+				'editing:': this.editing,
+			})
   	},
   	cancelEdit() {
   		this.title = this.beforeEditCache;
