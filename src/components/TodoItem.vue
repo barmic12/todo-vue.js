@@ -1,15 +1,15 @@
 <template>
 	<div class="todo" >
 		<div class="left-side">
-			<input type="checkbox" v-model="completed" @change="doneEdit" />
-			<div v-if="!editing" :class="{ completed: completed }">
+			<input type="checkbox" v-model="status" @change="doneEdit" />
+			<div v-if="!editing" :class="{ completed: status }">
 
 				<span @dblclick="editItem">
-					{{ title }}
+					{{ name }}
 				</span>
 			</div>
 			<div v-if="editing">
-				<input type="text" v-model="title" @blur="doneEdit" @keyup.enter="doneEdit" @keyup.esc="cancelEdit" v-focus class="input-edit" />
+				<input type="text" v-model="name" @blur="doneEdit" @keyup.enter="doneEdit" @keyup.esc="cancelEdit" v-focus class="input-edit" />
 			</div>
 		</div>
 		<div>
@@ -39,15 +39,15 @@ export default {
   data() {
   	return {
   		'id': this.item.id,
-  		'title': this.item.title,
-  		'completed': this.item.completed,
+  		'name': this.item.name,
+  		'status': this.item.status,
   		'editing': this.item.editing,
   		'beforeEditCache': ''
   	}
   },
   watch: {
   	checkAll() {
-  		this.completed = this.checkAll ? true : this.item.completed
+  		this.completed = this.checkAll ? true : this.item.status
   	}
   },
   methods: {
@@ -57,24 +57,24 @@ export default {
 			this.$store.dispatch('deleteTodo', id)
   	},
   	editItem() {
-  		this.beforeEditCache = this.title
+  		this.beforeEditCache = this.name
   		this.editing = true;
   	},
   	doneEdit() {
-  		if (this.title.trim().length == 0) {
+  		if (this.name.trim().length == 0) {
   			return;
   		}
   		this.editing = false;
   		//this.$emit('finishedEdit', {
 			this.$store.dispatch('updateItem', {
 				'id': this.id,
-				'title': this.title,
-				'completed': this.completed,
+				'name': this.name,
+				'status': this.status,
 				'editing:': this.editing,
 			})
   	},
   	cancelEdit() {
-  		this.title = this.beforeEditCache;
+  		this.name = this.beforeEditCache;
   		this.editing = false;
   	},
   },

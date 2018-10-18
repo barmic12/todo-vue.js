@@ -4,7 +4,7 @@
 			id="form-app"
 			@submit.prevent="addItem"
 			>
-			<input type="text" placeholder="Write todo..." v-model="title" />
+			<input type="text" placeholder="Write todo..." v-model="name" />
 		</form>
 		<div class="todo-list">
 			<todo-item v-for="(item, index) in itemsFiltered" :key="item.id" :item="item" :index="index" class="todo-item"
@@ -41,21 +41,24 @@ export default {
   },
   data() {
   	return {
-  		title: '',
-			idForItem: 3,
+  		name: '',
+			idForItem: this.length,
   		beforeEditCache: '',
 			visibility: 'all',
 			errors: []
   	}
   },
+	created() {
+		this.$store.dispatch('retrieveItems')
+	},
   methods: {
   	addItem() {
 			this.$store.dispatch('addItem', {
-  			title: this.title,
+  			name: this.name,
 				id: this.idForItem
   		})
 
-  		this.title = null;
+  		this.name = null;
 			this.idForItem++;
   	},
   },
