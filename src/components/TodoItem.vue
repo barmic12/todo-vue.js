@@ -47,14 +47,14 @@ export default {
   },
   watch: {
   	checkAll() {
-  		this.completed = this.checkAll ? true : this.item.status
+  		this.status = this.checkAll ? true : this.item.status
   	}
   },
   methods: {
   	removeItem(id) {
   		//this.$emit('removedItem', item)
 			//eventBus.$emit('removedItem', item)
-			this.$store.dispatch('deleteTodo', id)
+			this.$store.dispatch('deleteItem', id)
   	},
   	editItem() {
   		this.beforeEditCache = this.name

@@ -64,7 +64,7 @@ export const store = new Vuex.Store({
       checkAll(state, checked) {
         state.items.forEach((item) => item.status = checked )
       },
-      deleteTodo(state, id) {
+      deleteItem(state, id) {
         const index = state.items.findIndex(item => item.id == id)
   			state.items.splice(index, 1);
       },
@@ -96,22 +96,65 @@ export const store = new Vuex.Store({
           })
       },
       addItem(context, item) {
-        context.commit('addItem', item)
+        axios.post('/tasks', {
+          name: item.name,
+          status: false,
+          headers: {
+        'Content-Type': 'application/json'
+    }
+        })
+          .then(response =>  {
+              context.commit('addItem', item)
+          })
+          .catch(error => {
+            console.log(error)
+          })
       },
       clearCompleted(context) {
-        context.commit('clearCompleted')
+        axios.delete('/tasks/remove_completed')
+          .then(response =>  {
+              context.commit('clearCompleted')
+          })
+          .catch(error => {
+            console.log(error)
+          })
+
       },
       changeFilter(context, filter) {
         context.commit('changeFilter', filter)
       },
       checkAll(context, event) {
-        context.commit('checkAll', event)
+        axios.put('/tasks/update_all', {
+          status: event
+        })
+          .then(response =>  {
+              context.commit('checkAll', event)
+          })
+          .catch(error => {
+            console.log(error)
+          })
       },
-      deleteTodo(context, id) {
-        context.commit('deleteTodo', id)
+      deleteItem(context, id) {
+        axios.delete('/tasks/'+id)
+          .then(response =>  {
+              context.commit('deleteItem', id)
+          })
+          .catch(error => {
+            console.log(error)
+          })
       },
       updateItem(context, item) {
-        context.commit('updateItem', item)
+        axios.put('/tasks/'+item.id, {
+          name: item.name,
+          status:
+          item.status
+        })
+          .then(response =>  {
+              context.commit('updateItem', item)
+          })
+          .catch(error => {
+            console.log(error)
+          })
       },
     }
 })
